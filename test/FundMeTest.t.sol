@@ -11,8 +11,8 @@ import {FundMe} from "../src/FundMe.sol";
 contract FundMeTest is Test {
     //Variável do tipo FundMe
     FundMe fundMe;
-    //Função de configuração que será executada antes de cada teste
 
+    //Função de configuração que será executada antes de cada teste
     function setUp() external {
         //Instanciando contrato
         //fundMe é uma variável do tipo FundMe que recebe o contrato FundMe.
@@ -34,5 +34,15 @@ contract FundMeTest is Test {
         console.log(fundMe.i_owner());
         //Logando o msg.sender
         console.log(msg.sender);
+    }
+
+    //Função que será executada para testar o contrato
+    function testPriceFeedVersionIsCorrect() public view {
+        //Primeiro vamos logar o valor para ver o que está retornando
+        uint256 version = fundMe.getVersion();
+        console.log("Price feed version:", version);
+        
+        //Depois fazemos a verificação
+        assertEq(version, 4);
     }
 }
