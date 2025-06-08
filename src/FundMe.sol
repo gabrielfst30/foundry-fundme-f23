@@ -10,7 +10,9 @@ error FundMe__NotOwner();
 contract FundMe {
     using PriceConverter for uint256;
 
+    //key do tipo address e valor do tipo uint256
     mapping(address => uint256) public addressToAmountFunded;
+    //array de endereços
     address[] public funders;
 
     // Could we make this constant?  /* hint: no! We should make it immutable! */
@@ -22,6 +24,11 @@ contract FundMe {
     }
 
     function fund() public payable {
+        /*
+         "Verifique se o valor em ETH que a pessoa está enviando, 
+         quando convertido para dólares, é maior ou igual a 5 USD. 
+         Se não for, reverta a transação e mostre a mensagem 'You need to spend more ETH!'"
+         */
         require(msg.value.getConversionRate() >= MINIMUM_USD, "You need to spend more ETH!");
         // require(PriceConverter.getConversionRate(msg.value) >= MINIMUM_USD, "You need to spend more ETH!");
         addressToAmountFunded[msg.sender] += msg.value;
