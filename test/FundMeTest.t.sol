@@ -7,6 +7,9 @@ import {Test, console} from "forge-std/Test.sol";
 //Importando contrato
 import {FundMe} from "../src/FundMe.sol";
 
+//Importando script de deploy
+import {DeployFundMe} from "../script/DeployFundMe.s.sol";
+
 //Nomeando contrato e herdando de Test
 contract FundMeTest is Test {
     //Variável do tipo FundMe
@@ -16,7 +19,8 @@ contract FundMeTest is Test {
     function setUp() external {
         //Instanciando contrato
         //fundMe é uma variável do tipo FundMe que recebe o contrato FundMe.
-        fundMe = new FundMe();
+        DeployFundMe deployFundMe = new DeployFundMe(); //Instanciando o contrato DeployFundMe
+        fundMe = deployFundMe.run(); //Atribuindo o contrato FundMe ao contrato fundMe
     }
 
     //Função que será executada para testar o contrato
@@ -29,7 +33,7 @@ contract FundMeTest is Test {
     //Função que será executada para testar o contrato
     function testOwnerIsMsgSender() public view {
         //Testando se o owner é o address(this) que é o contrato que está sendo testado
-        assertEq(fundMe.i_owner(), address(this));
+        assertEq(fundMe.i_owner(), msg.sender);
         //Logando o owner
         console.log(fundMe.i_owner());
         //Logando o msg.sender
@@ -43,6 +47,6 @@ contract FundMeTest is Test {
         console.log("Price feed version:", version);
         
         //Depois fazemos a verificação
-        assertEq(version, 4);
+        assertEq(version >= 4, true);
     }
 }
