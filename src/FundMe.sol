@@ -18,9 +18,12 @@ contract FundMe {
     // Could we make this constant?  /* hint: no! We should make it immutable! */
     address public /* immutable */ i_owner;
     uint256 public constant MINIMUM_USD = 5 * 10 ** 18;
+    AggregatorV3Interface private s_priceFeed; //variável para armazenar o preço do feed
 
-    constructor() {
-        i_owner = msg.sender;
+    //Contrutor para inicializar o contrato
+    constructor(address priceFeed) {
+        i_owner = msg.sender; //inicializa o owner com o endereço do contrato que está sendo deployado
+        s_priceFeed = AggregatorV3Interface(priceFeed); //inicializa o priceFeed com o endereço do feed que está sendo passado como parâmetro
     }
 
     function fund() public payable {
@@ -29,15 +32,14 @@ contract FundMe {
          quando convertido para dólares, é maior ou igual a 5 USD. 
          Se não for, reverta a transação e mostre a mensagem 'You need to spend more ETH!'"
          */
-        require(msg.value.getConversionRate() >= MINIMUM_USD, "You need to spend more ETH!");
+        require(msg.value.getConversionRate(s_priceFeed) >= MINIMUM_USD, "You need to spend more ETH!");
         // require(PriceConverter.getConversionRate(msg.value) >= MINIMUM_USD, "You need to spend more ETH!");
         addressToAmountFunded[msg.sender] += msg.value;
         funders.push(msg.sender);
     }
 
     function getVersion() public view returns (uint256) {
-        AggregatorV3Interface priceFeed = AggregatorV3Interface(0x694AA1769357215DE4FAC081bf1f309aDC325306);
-        return priceFeed.version();
+        return s_priceFeed.version(); //retorna a versão do priceFeed
     }
 
     modifier onlyOwner() {
