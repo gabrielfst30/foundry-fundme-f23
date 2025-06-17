@@ -42,7 +42,7 @@ contract FundMeTest is Test {
 
     //Função que será executada para testar o contrato
     function testPriceFeedVersionIsCorrect() public view {
-        //Primeiro vamos logar o valor para ver o que está retornando
+        //Primeiro vamos chamar o valor para ver o que está retornando
         uint256 version = fundMe.getVersion();
         console.log("Price feed version:", version);
         
