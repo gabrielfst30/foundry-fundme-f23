@@ -49,4 +49,15 @@ contract FundMeTest is Test {
         //Depois fazemos a verificação
         assertEq(version >= 4, true);
     }
+
+    //Força falha para quando a transação não enviar nenhum eth
+    function testFundFailsWithoutEnoughEth() public {
+        vm.expectRevert(); //Força a proxima transação a falhar
+        fundMe.fund(); //Chamando a funçao fund sem enviar nenhum ether
+    }
+
+
+    function testFundUpdatesFundedDataStructure() public{
+        fundMe.fund{value: 10e18}();
+    }
 }
