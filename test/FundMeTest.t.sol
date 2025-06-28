@@ -141,4 +141,30 @@ contract FundMeTest is Test {
         assert(address(fundMe).balance == 0); //O contrato deve ter o valor de 0 ETH
         assert(startingFundMeBalance + startingOwnerBalance == fundMe.getOwner().balance); //Os valores iniciais antes de sacados, devem agora ser iguais ao do owner que fez o saque
     }
+
+
+ //Testando a retirada de fundos de vários financiadores (com economia de gás)
+    function testWithdrawnFromMultipleFundersCheaper() public funded {
+        //Arrange
+        uint160 numberOfFunders = 10; //número de financiadores 
+        uint160 startingFunderIndex = 1; //indice
+
+        
+        for (uint160 i = startingFunderIndex; i < numberOfFunders; i++) {
+            //hoax é a junção de um vm.prank com um vm.deal -> indica que a proxima transação será enviada por esse endereço e define o saldo do endereço ao mesmo tempo.
+            hoax(address(i), 10e18); //definindo 10eth para todos os address percorridos pelo for
+            fundMe.fund{value: 10e18}(); //enviando 10 ETH
+        }
+
+        //Act
+        uint256 startingOwnerBalance = fundMe.getOwner().balance; //pegando o balance atual do owner
+        uint256 startingFundMeBalance = address(fundMe).balance; //pegando o balance atual do contrato
+
+        vm.prank(fundMe.getOwner()); //proxima transaçao será executada pelo owner
+        fundMe.cheaperWithdraw();
+
+        //Assert
+        assert(address(fundMe).balance == 0); //O contrato deve ter o valor de 0 ETH
+        assert(startingFundMeBalance + startingOwnerBalance == fundMe.getOwner().balance); //Os valores iniciais antes de sacados, devem agora ser iguais ao do owner que fez o saque
+    }
 }
