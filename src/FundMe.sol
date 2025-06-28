@@ -47,10 +47,32 @@ contract FundMe {
         _;
     }
 
+    //Lendo o s_funders apenas uma vez em uma memory variable para economizar gas
+    function cheaperWithdraw() public onlyOwner {
+        uint256 fundersLength = s_funders.length; //Armazenando a array s_funders
+
+            for (uint256 funderIndex = 0; funderIndex < fundersLength; funderIndex++) { //percorrendo fundersLength (financiadores)
+            address funder = s_funders[funderIndex]; //armazenando o address dos financiadores
+            s_addressToAmountFunded[funder] = 0; //setando o amount para zero (zerando carteiras dos financiadores)
+        }
+
+        s_funders = new address[](0); //criando um novo array de endereços vazio
+        // // transfer
+        // payable(msg.sender).transfer(address(this).balance);
+
+        // // send
+        // bool sendSuccess = payable(msg.sender).send(address(this).balance);
+        // require(sendSuccess, "Send failed");
+
+        // call - envia o saldo total do endereço para o dono do contrato.
+        (bool callSuccess,) = payable(msg.sender).call{value: address(this).balance}("");
+        require(callSuccess, "Call failed");
+    }
+
     function withdraw() public onlyOwner {
-        for (uint256 funderIndex = 0; funderIndex < s_funders.length; funderIndex++) {
-            address funder = s_funders[funderIndex];
-            s_addressToAmountFunded[funder] = 0;
+        for (uint256 funderIndex = 0; funderIndex < s_funders.length; funderIndex++) { //percorrendo s_funders (financiadores)
+            address funder = s_funders[funderIndex]; //armazenando todos os s_funders (financiadores)
+            s_addressToAmountFunded[funder] = 0; //setando o amout para zero (zerando carteiras dos financiadores)
         }
         s_funders = new address[](0);
         // // transfer
