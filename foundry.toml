@@ -4,5 +4,6 @@ out = "out"
 libs = ["lib"]
 # Fazendo o remapping para a lib do chainlink reconhecer os imports
 remappings = ["@chainlink/contracts/=lib/chainlink-brownie-contracts/contracts/"]
+ffi = true
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
