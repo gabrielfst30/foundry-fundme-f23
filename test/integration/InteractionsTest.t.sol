@@ -11,7 +11,7 @@ import {FundMe} from "../../src/FundMe.sol";
 import {DeployFundMe} from "../../script/DeployFundMe.s.sol";
 
 //Importando script de interações
-import {FundFundMe} from "../../script/interactions.s.sol";
+import {FundFundMe, WithdrawFundMe} from "../../script/interactions.s.sol";
 
 //Nomeando contrato e herdando de Test
 contract InteractionsTest is Test {
@@ -29,14 +29,15 @@ contract InteractionsTest is Test {
         vm.deal(USER, 10e18); //cheatcode para atribuir valor ao address USER criado
     }
 
+    //Teste para verificar se o usuário pode financiar e sacar o dinheiro do contrato
     function testUserCanFundInteractions() public {
         FundFundMe fundFundMe = new FundFundMe(); //Instanciando o contrato FundFundMe
-        vm.prank(USER); //cheatcode para fazer a próxima transação ser enviada por USER
-        vm.deal(USER, 10e18); //cheatcode para atribuir valor ao address USER criado
         fundFundMe.fundFundMe(address(fundMe)); //Rodando a função fundFundMe passando o endereço do contrato fundMe
 
-        address funder = fundMe.getFunder(0); //Pegando o primeiro financiador pelo indice
-        assertEq(funder, USER); //Comparando de o financiador é o USER
+        WithdrawFundMe withdrawFundMe = new WithdrawFundMe(); //Instanciando o contrato WithdrawFundMe
+        withdrawFundMe.withdrawFundMe(address(fundMe)); //Rodando a função withdrawFundMe passando o endereço do contrato fundMe
+
+        assert(address(fundMe).balance == 0); //Verificando se o saldo do contrato fundMe é 0
     }
 
 }
